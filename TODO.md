@@ -1,5 +1,4 @@
-Create new folder
-Rename folder with timestamp prefix + book name
+Add NN to timestamp
 Fetch audio
 Export audio with proper filename
 Fetch text
