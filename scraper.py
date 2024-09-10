@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 from bs4 import BeautifulSoup
+import requests
 
 # * Input
 # kPath to the HTML file
@@ -93,16 +94,42 @@ def fetchAuthor(soup):
     print(f'Error fetching author: {e}')
   return author
 
-# ! Review later
 # Fetch audio src using 'data-test-id' attribute for 'audio-player'
+# Input: BeautifulSoup object containing the parsed HTML content
+# Output: Audio source, string
 def fetchAudioSrc(soup):
   try:
-    audio_element = soup.select_one('[data-test-id="audio-player"] audio')
+    audio_element = soup.select_one('audio')
     audio_src = audio_element['src'] if audio_element else 'Audio source not found'
   except Exception as e:
     audio_src = 'Audio source not found'
     print(f'Error fetching audio source: {e}')
   return audio_src
+
+def downloadAudio(audio_src, folder_path, file_name):
+  # Make sure the folder exists
+  if not os.path.exists(folder_path):
+      os.makedirs(folder_path)
+    
+  # Full path for the output file
+  file_path = os.path.join(folder_path, file_name)
+  
+  try:
+    # Send a GET request to fetch the audio content
+    response = requests.get(audio_src, stream=True)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+      # Write the audio content to the file
+      with open(file_path, 'wb') as audio_file:
+        for chunk in response.iter_content(chunk_size=1024):
+          if chunk:
+            audio_file.write(chunk)
+      print(f"Audio file downloaded successfully: {file_path}")
+    else:
+      print(f"Failed to download audio. Status code: {response.status_code}")
+  except Exception as e:
+    print(f"An error occurred while downloading the audio: {e}")
 
 # Fetch the chapters from the page
 # Input: BeautifulSoup object containing the parsed HTML content
@@ -157,12 +184,12 @@ def main(html_file_path, default_root_folder_path):
   # Get the title, author, and audio src
   book_title = fetchTitle(page_soup)
   book_author = fetchAuthor(page_soup)
-  # audio_src = fetchAudioSrc(page_soup)
+  audio_src = fetchAudioSrc(page_soup)
   
   # ! PRINT TO TEST
   print(f'Title: {book_title}')
   print(f'Author: {book_author}')
-  # print(f'Audio Source: {audio_src}')
+  print(f'Audio Source: {audio_src}')
   
   # Creating the folder
   timestamp = createTimeStamp(default_root_folder_path)
@@ -182,6 +209,9 @@ def main(html_file_path, default_root_folder_path):
   # ! PRINT TO TEST
   for (i, chapter) in enumerate(chapter_content):
     print(f'{chapter['subtitle']} - {chapter['title']}')
+    
+  # Download the audio
+  downloadAudio(audio_src, created_folder_path, 'audio.mp3')
   
 # * Run the main function
 main(html_file_path, default_root_folder_path)
