@@ -28,17 +28,34 @@ def createFolderName(timestamp, book_title, book_author):
   folder_name = f'{timestamp} - {book_author} - {book_title}'
   return folder_name
 
-# Create a timestamp in the format 'YYYY-MM-DD'
-# Input: None
+# Create a timestamp in the format 'YYYY-MM-DD-NN'
+# Input: default_root_folder_path, string
 # Output: Timestamp, string
-def createTimeStamp():
+# NN represents the count of folders existing for that timestamp, so for example, if there's already 2024-09-10-01 and teh timestamp is 2024-09-10, the new timestamp should then be 2024-09-10-02
+# This NN should come in handy if it gets to the point that you can do multiple scrapes per day
+def createTimeStamp(default_root_folder_path):
+  # Get the YYYY-MM-DD timestamp first
   timestamp = datetime.now().strftime('%Y-%m-%d')
+  
+  # Check if folders starting with the timestamp already exist in the default root folder path
+  match_count = countMatchingTimeStamps(default_root_folder_path, timestamp)
+  
+  # Append the count to the timestamp, adding 1 to the count
+  timestamp = f'{timestamp}-{str(match_count + 1).zfill(2)}'
+      
   return timestamp
 
-# ! TODO LATER
-def checkIfTimeStampIsTaken(default_root_folder_path, folder_name):
-  folder_path = f'{default_root_folder_path}/{folder_name}'
-  return os.path.exists(folder_path)
+# Check if the timestamp already has folders in the default root folder path
+# Input: default_root_folder_path, string, Timestamp, string
+# Output: number of folders matching the timestamp, int
+def countMatchingTimeStamps(default_root_folder_path, timestamp):
+  # Check if folders starting with the timestamp already exist in the default root folder path
+  matching_folders = [folder for folder in os.listdir(default_root_folder_path) if folder.startswith(timestamp)]
+  
+  # Get the count
+  match_count = len(matching_folders)
+  
+  return match_count
   
 # Fetch the page content from the local HTML file
 # Input: HTML file path, string
@@ -98,7 +115,7 @@ def main(html_file_path, default_root_folder_path):
   # audio_src = fetchAudioSrc(page_soup)
   
   # Creating the folder
-  timestamp = createTimeStamp()
+  timestamp = createTimeStamp(default_root_folder_path)
   folder_name = createFolderName(timestamp, book_title, book_author)
   createFolder(default_root_folder_path, folder_name)
 
