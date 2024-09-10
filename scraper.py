@@ -106,31 +106,6 @@ def fetchAudioSrc(soup):
     print(f'Error fetching audio source: {e}')
   return audio_src
 
-def downloadAudio(audio_src, folder_path, file_name):
-  # Make sure the folder exists
-  if not os.path.exists(folder_path):
-      os.makedirs(folder_path)
-    
-  # Full path for the output file
-  file_path = os.path.join(folder_path, file_name)
-  
-  try:
-    # Send a GET request to fetch the audio content
-    response = requests.get(audio_src, stream=True)
-
-    # Check if the request was successful
-    if response.status_code == 200:
-      # Write the audio content to the file
-      with open(file_path, 'wb') as audio_file:
-        for chunk in response.iter_content(chunk_size=1024):
-          if chunk:
-            audio_file.write(chunk)
-      print(f"Audio file downloaded successfully: {file_path}")
-    else:
-      print(f"Failed to download audio. Status code: {response.status_code}")
-  except Exception as e:
-    print(f"An error occurred while downloading the audio: {e}")
-
 # Fetch the chapters from the page
 # Input: BeautifulSoup object containing the parsed HTML content
 # Output: List of chapters each item as parsed HTML content, list
@@ -189,7 +164,6 @@ def main(html_file_path, default_root_folder_path):
   # ! PRINT TO TEST
   print(f'Title: {book_title}')
   print(f'Author: {book_author}')
-  print(f'Audio Source: {audio_src}')
   
   # Creating the folder
   timestamp = createTimeStamp(default_root_folder_path)
@@ -209,9 +183,10 @@ def main(html_file_path, default_root_folder_path):
   # ! PRINT TO TEST
   for (i, chapter) in enumerate(chapter_content):
     print(f'{chapter['subtitle']} - {chapter['title']}')
-    
-  # Download the audio
-  downloadAudio(audio_src, created_folder_path, 'audio.mp3')
+  
+  # ! PRINTING AUDIO SOURCE  
+  print(f'Download Audio Source:\n')
+  print(f'{audio_src}')
   
 # * Run the main function
 main(html_file_path, default_root_folder_path)
