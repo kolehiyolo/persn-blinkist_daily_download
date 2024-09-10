@@ -1,4 +1,3 @@
-Fetch [data-test-id="audio-player"] from input HTML
 Get book and author info
 Create new folder
 Rename folder with timestamp prefix + book name

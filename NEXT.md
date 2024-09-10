@@ -1,1 +1,1 @@
-Fetch [data-test-id="audio-player"] from input HTML
+Get book and author info
