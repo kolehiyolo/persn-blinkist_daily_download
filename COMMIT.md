@@ -1,3 +1,3 @@
-Fetch [data-test-id="audio-player"] from input HTML
-1. Alright as a sad little compromise, as planned, I have the page contents copy-and-pasted manually onto a input/page.html file, and the scraper fetches the data from that
-2. It's sucky, sure, but beats having to manually copy-paste the contents straight from the page selectively and multiple times, as well as downloading the audio file and renaming all of it
+Get book and author info
+1. Alright so not a lot of actual code change was done and it was just mostly documenting
+2. I did, however, create a main() function to be, well, the main function to run, detailing the high-level sequence of instructions
