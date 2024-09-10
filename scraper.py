@@ -127,6 +127,28 @@ def fetchContentFromChapter(chapter_html):
   }
   return chapter_content
 
+# Create a markdown file in the folder path with the given name
+# Input: Folder path, string; File name, string; Book title, string; Book author, string; Timestamp, string
+# Output: Markdown file created in the folder path with some starter text, void
+def createMDFile(folder_path, file_name, book_title, book_author, timestamp):
+  with open(f'{folder_path}/{file_name}.md', 'w', encoding='utf-8') as file:
+    file.write(f'# {book_title}\n')
+    file.write(f'{book_author}, {timestamp}\n')
+    file.write(f'\n')
+  return None
+
+# Write the chapter content to the markdown file
+# Input: Folder path, string; File name, string; Chapter content, list
+# Output: Chapter content written to the markdown file, void
+def writeToMDFile(folder_path, file_name, chapter_content):
+  with open(f'{folder_path}/{file_name}.md', 'a', encoding='utf-8') as file:
+    for (i, chapter) in enumerate(chapter_content):
+      file.write(f'### {chapter['subtitle']}\n')
+      file.write(f'## {chapter['title']}\n')
+      file.write(f'{chapter['content']}\n')
+      file.write(f'\n')
+  return None
+
 # * MAIN FUNCTION
 def main(html_file_path, default_root_folder_path):
   # Fetch the page
@@ -145,11 +167,17 @@ def main(html_file_path, default_root_folder_path):
   # Creating the folder
   timestamp = createTimeStamp(default_root_folder_path)
   folder_name = createFolderName(timestamp, book_title, book_author)
-  createFolder(default_root_folder_path, folder_name)
+  created_folder_path = createFolder(default_root_folder_path, folder_name)
   
   # Fetch text content from the page
   chapters_html = fetchChapters(page_soup)
   chapter_content = [fetchContentFromChapter(chapter_html) for chapter_html in chapters_html]
+  
+  # Create the markdown file
+  createMDFile(created_folder_path, folder_name, book_title, book_author, timestamp)
+  
+  # Write to the created markdown file
+  writeToMDFile(created_folder_path, folder_name, chapter_content)
   
   # ! PRINT TO TEST
   for (i, chapter) in enumerate(chapter_content):
