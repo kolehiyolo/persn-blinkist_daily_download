@@ -1,1 +1,1 @@
-Add NN to timestamp
+Export text content to MD

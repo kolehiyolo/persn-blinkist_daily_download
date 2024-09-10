@@ -104,6 +104,29 @@ def fetchAudioSrc(soup):
     print(f'Error fetching audio source: {e}')
   return audio_src
 
+# Fetch the chapters from the page
+# Input: BeautifulSoup object containing the parsed HTML content
+# Output: List of chapters each item as parsed HTML content, list
+def fetchChapters(soup):
+  reader_content = soup.select_one('[data-test-id="reader-content"]')
+  chapters_html = reader_content.select('div.mb-24')
+  return chapters_html
+
+# Fetch the content from a chapter_html
+# Input: Chapter HTML content, BeautifulSoup object
+# Output: Dictionary containing the subtitle, title, and content of the chapter
+def fetchContentFromChapter(chapter_html):
+  subtitle =  chapter_html.select_one('h4').text.strip()
+  title = chapter_html.select_one('h2').text.strip()
+  content = chapter_html.select_one('[data-test-id="transcription-component"]').text.strip()
+  
+  chapter_content = {
+    'subtitle': subtitle,
+    'title': title,
+    'content': content
+  }
+  return chapter_content
+
 # * MAIN FUNCTION
 def main(html_file_path, default_root_folder_path):
   # Fetch the page
@@ -114,15 +137,23 @@ def main(html_file_path, default_root_folder_path):
   book_author = fetchAuthor(page_soup)
   # audio_src = fetchAudioSrc(page_soup)
   
+  # ! PRINT TO TEST
+  print(f'Title: {book_title}')
+  print(f'Author: {book_author}')
+  # print(f'Audio Source: {audio_src}')
+  
   # Creating the folder
   timestamp = createTimeStamp(default_root_folder_path)
   folder_name = createFolderName(timestamp, book_title, book_author)
   createFolder(default_root_folder_path, folder_name)
-
-  # Output the title, author, and audio src
-  print(f'Title: {book_title}')
-  print(f'Author: {book_author}')
-  # print(f'Audio Source: {audio_src}')
+  
+  # Fetch text content from the page
+  chapters_html = fetchChapters(page_soup)
+  chapter_content = [fetchContentFromChapter(chapter_html) for chapter_html in chapters_html]
+  
+  # ! PRINT TO TEST
+  for (i, chapter) in enumerate(chapter_content):
+    print(f'{chapter['subtitle']} - {chapter['title']}')
   
 # * Run the main function
 main(html_file_path, default_root_folder_path)
