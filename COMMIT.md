@@ -1,4 +1,4 @@
-Initialize project
-1. Alright so I setup the project and the directory best I could foreseeing what the project entails
-2. I have a folder samples/ housing the sample HTML that we'll be inspecting, an output/ folder which is where the scrape outputs will go, my usual MDs, and the .gitignore and the license
-3. I believe this project will be quite a breeze, given the update of the UI for the page, simplifying the fetches
+Beautiful soup failing
+1. Yeah the soup being fetched does not seem to match the live page HTML
+2. Could be that they have preventative measures for non-browser get requests
+3. Gonna try Selenium then
