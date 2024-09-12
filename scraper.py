@@ -25,8 +25,10 @@ def createFolder(default_root_folder_path, folder_name):
 # Create a folder name using the timestamp, book title, and book author
 # Input: Timestamp, string; Book title, string; Book author, string
 # Output: Folder name, string
+# We want the folder name to be windows safe, so we'll remove any invalid characters 
 def createFolderName(timestamp, book_title, book_author):
   folder_name = f'{timestamp} - {book_author} - {book_title}'
+  folder_name = folder_name.replace(':', ' -').replace('/', ' ').replace('\\', ' ').replace('?', '').replace('*', '').replace('"', "'").replace('<', '').replace('>', '').replace('|', '')
   return folder_name
 
 # Create a timestamp in the format 'YYYY-MM-DD-NN'
